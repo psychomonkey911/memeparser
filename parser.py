@@ -7,16 +7,30 @@ from bs4 import BeautifulSoup
 
 UserAgent().chrome
 
-page_link = 'http://knowyourmeme.com/memes/all/page/1'
-response = requests.get(page_link, headers={'User-Agent': UserAgent().chrome})
-print (response)
+def getPageLinks(page_number):
+    """
+        Returns list of links from current page
+        page_number: int/string
+    """
+    # make link to the search page
+    page_link = 'http://knowyourmeme.com/memes/all/page/{}'.format(page_number)
 
-html = response.content
-soup = BeautifulSoup(html,'html.parser')
+    # request data on it
+    response = requests.get(page_link, headers={'User-Agent': UserAgent().chrome})
 
-obj = soup.find(lambda tag: tag.name == 'a' and tag.get('class') == ['photo']) #removes the passage of unnecessary links
+    if not response.ok:
+        # If the server denied, return a blank sheet
+        return []
 
-meme_links = soup.findAll(lambda tag: tag.name == 'a' and tag.get('class') == ['photo']) #All objects that contain links to pages with memes
+    # получаем содержимое страницы и переводим в суп
+    html = response.content
+    soup = BeautifulSoup(html,'html.parser')
 
-meme_links = [link.attrs['href'] for link in meme_links]
-print(meme_links[:10])
+    # наконец, ищем ссылки на мемы и очищаем их от ненужных тэгов
+    meme_links = soup.findAll(lambda tag: tag.name == 'a' and tag.get('class') == ['photo'])
+    meme_links = ['http://knowyourmeme.com' + link.attrs['href'] for link in meme_links]
+
+    return meme_links
+
+meme_links = getPageLinks(1)
+print (meme_links[:2])
