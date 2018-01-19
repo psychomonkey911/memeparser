@@ -34,3 +34,13 @@ def getPageLinks(page_number):
 
 meme_links = getPageLinks(1)
 print (meme_links[:2])
+
+meme_page = 'http://knowyourmeme.com/memes/doge'
+response = requests.get(meme_page, headers={'User-Agent': UserAgent().chrome})
+html = response.content
+soup = BeautifulSoup(html,'html.parser')
+
+views = soup.find('dd', attrs={'class':'views'})
+views = views.find('a').text
+views = int(views.replace(',', ''))
+print(views)
