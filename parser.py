@@ -32,9 +32,6 @@ def getPageLinks(page_number):
 
     return meme_links
 
-meme_links = getPageLinks(1)
-print (meme_links[:2])
-
 meme_page = 'http://knowyourmeme.com/memes/doge'
 response = requests.get(meme_page, headers={'User-Agent': UserAgent().chrome})
 html = response.content
@@ -44,3 +41,24 @@ views = soup.find('dd', attrs={'class':'views'})
 views = views.find('a').text
 views = int(views.replace(',', ''))
 print(views)
+
+def getStats(soup, stats):
+    """
+        Returns the number of views / comments cleared /...
+        stats: string
+            views/videos/photos/comments
+
+    """
+
+    obj = soup.find('dd', attrs={'class':stats})
+    obj = obj.find('a').text
+    obj = int(obj.replace(',', ''))
+
+    return obj
+
+views = getStats(soup, stats='views')
+videos = getStats(soup, stats='videos')
+photos = getStats(soup, stats='photos')
+comments = getStats(soup, stats='comments')
+
+print("Просмотры: {}\nВидео: {}\nФото: {}\nКомментарии: {}".format(views, videos, photos, comments))
